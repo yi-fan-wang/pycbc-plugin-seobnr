@@ -42,8 +42,8 @@ def combine_modes(
 def timeMtoSec(timeM, M):
     return timeM * M * lal.MTSUN_SI
 
-def HztoFreqinvM(Hz, M):
-    return Hz * lal.MTSUN_SI * M
+def HztoOmegainvM(Hz, M):
+    return np.pi * Hz * lal.MTSUN_SI * M
 
 def ampNRtoPhysicalTD(ampNR, M, distance):
     return ampNR * (lal.C_SI * M *lal.MTSUN_SI)/distance
@@ -62,7 +62,7 @@ def genwave(**kwargs):
     rel_anomaly = kwargs['rel_anomaly']
     iota = kwargs['inclination']
     phi_angle = kwargs['coa_phase']
-    omega0 = HztoFreqinvM(kwargs['f_lower'], M_tot)
+    omega0 = HztoOmegainvM(kwargs['f_lower'], M_tot)
 
     #sanity checks
     assert chi_1[0] == 0 and chi_1[1] == 0 and chi_2[0] == 0 and chi_2[1] == 0, \

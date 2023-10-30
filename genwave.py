@@ -48,7 +48,7 @@ def HztoOmegainvM(Hz, M):
 def ampNRtoPhysicalTD(ampNR, M, distance):
     return ampNR * (lal.C_SI * M *lal.MTSUN_SI)/distance
 
-def genwave(**kwargs):
+def genpyseob(**kwargs):
     '''PyCBC waveform generator for SEOBNRv5EHM
     '''
 

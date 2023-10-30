@@ -16,10 +16,10 @@ setup (
     #download_url = 'https://github.com/gwastro/revchirp/tarball/v%s' % VERSION,
     keywords = ['effective one body', 'gravitational waves', 'pycbc'],
     packages = find_packages(),
-    #py_modules = ['birefringence'],
+    py_modules = ['genwave'],
     #package_dir = {'':'src'},
     #package_dir={'PyTGR': 'src'},
-    entry_points = {"pycbc.waveform.td":["SEOBNRv5E = genwave:genwave"],
+    entry_points = {"pycbc.waveform.td":["SEOBNRv5E = genwave:genpyseob"],
                     "pycbc.waveform.length":["SEOBNRv5E = pycbc.waveform.waveform:seobnrv5_length_in_time"]},
     python_requires='>=3.7',
     classifiers=[

@@ -2,6 +2,7 @@ import numpy as np
 import lal
 from pycbc.types import TimeSeries
 from pyseobnr.generate_waveform import generate_modes_opt
+from pycbc.waveform.utils import taper_timeseries
 
 def Ylm(l: int, m: int, theta: float, phi: float) -> float:
     """Get the spin-2 weighter spherical harmonics
@@ -48,7 +49,7 @@ def HztoOmegainvM(Hz, M):
 def ampNRtoPhysicalTD(ampNR, M, distance):
     return ampNR * (lal.C_SI * M *lal.MTSUN_SI)/distance
 
-def genpyseob(**kwargs):
+def genpyseob_td(**kwargs):
     '''PyCBC waveform generator for SEOBNRv5EHM
     '''
 
@@ -106,3 +107,11 @@ def genpyseob(**kwargs):
     hct = TimeSeries(hc, delta_t=delta_t, epoch=t_s[0])
 
     return hpt,hct
+
+def genpyseob_fd(**kwargs):
+    hpt, hct = genpyseob_td(**kwargs)
+    hp_taper = taper_timeseries(hpt,'TAPER_START')
+    hc_taper = taper_timeseries(hct,'TAPER_START')
+    hp_fd = hp_taper.to_frequencyseries()
+    hc_fd = hc_taper.to_frequencyseries()
+    return hp_fd,hc_fd

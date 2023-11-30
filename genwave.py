@@ -1,11 +1,12 @@
 import numpy as np
 import lal
 from pycbc.types import TimeSeries
-from pyseobnr.generate_waveform import generate_modes_opt
 from pycbc.waveform.utils import taper_timeseries
+from pyseobnr.generate_waveform import generate_modes_opt
+
 
 def Ylm(l: int, m: int, theta: float, phi: float) -> float:
-    """Get the spin-2 weighter spherical harmonics
+    """Get the spin-2 weighted spherical harmonics
 
     Args:
         l (int): ell
@@ -19,9 +20,7 @@ def Ylm(l: int, m: int, theta: float, phi: float) -> float:
     return lal.SpinWeightedSphericalHarmonic(theta, phi, -2, l, m)
 
 
-def combine_modes(
-    iota: float, phi: float, modes_dict
-):
+def combine_modes(iota: float, phi: float, modes_dict):
     """Combine modes to compute the waveform polarizations in the direction
     (iota,np.pi/2-phi)
 
@@ -33,7 +32,7 @@ def combine_modes(
     Returns:
         np.array: Waveform in the given direction
     """
-    sm = 0.0
+    sm = 0.0 #sm = h_+ - ih_x
     for key in modes_dict.keys():
         #print(key)
         ell, m = [int(x) for x in key.split(",")]
@@ -44,13 +43,15 @@ def timeMtoSec(timeM, M):
     return timeM * M * lal.MTSUN_SI
 
 def HztoOmegainvM(Hz, M):
+    '''Convert GW frequency to Omega measured by unit of 1/M
+    '''
     return np.pi * Hz * lal.MTSUN_SI * M
 
 def ampNRtoPhysicalTD(ampNR, M, distance):
     return ampNR * (lal.C_SI * M *lal.MTSUN_SI)/distance
 
-def genpyseob_td(**kwargs):
-    '''PyCBC waveform generator for SEOBNRv5EHM
+def genseob_td(**kwargs):
+    '''PyCBC waveform generator for SEOBNRv5E
     '''
 
     q = kwargs['mass1']/kwargs['mass2']
@@ -63,6 +64,7 @@ def genpyseob_td(**kwargs):
     rel_anomaly = kwargs['rel_anomaly']
     iota = kwargs['inclination']
     phi_angle = kwargs['coa_phase']
+    #initial orbital angular frequency in unit of inverse M
     omega0 = HztoOmegainvM(kwargs['f_lower'], M_tot)
 
     #sanity checks
@@ -83,8 +85,10 @@ def genpyseob_td(**kwargs):
     }
 
     # SEOBNRv5EHM waveform evaluation
-    time, hlm = generate_modes_opt(q, chi_1[2], chi_2[2], omega0, omega_start, eccentricity, 
-    rel_anomaly, approximant="SEOBNRv5EHM", RRForce='Ecc', settings=settings)
+    time, hlm = generate_modes_opt(q, chi_1[2], chi_2[2], 
+        omega_start, omega0, #Omega_start, Omega_ref
+        eccentricity, rel_anomaly, 
+        approximant="SEOBNRv5EHM", RRForce='Ecc', settings=settings)
 
     # Compute the negative m modes (aligned-spin)
     hlm_new = {}
@@ -108,10 +112,25 @@ def genpyseob_td(**kwargs):
 
     return hpt,hct
 
-def genpyseob_fd(**kwargs):
-    hpt, hct = genpyseob_td(**kwargs)
-    hp_taper = taper_timeseries(hpt,'TAPER_START')
-    hc_taper = taper_timeseries(hct,'TAPER_START')
-    hp_fd = hp_taper.to_frequencyseries()
-    hc_fd = hc_taper.to_frequencyseries()
-    return hp_fd,hc_fd
+def genseob_fd(**kwargs):
+    kwargs['delta_t'] = 1.0 / 2048
+    hp, hc = genseob_td(**kwargs)
+
+    # Resize to the right duration
+    tsamples = int(1.0 / kwargs['delta_f'] / kwargs['delta_t'])
+
+    if tsamples < len(hp):
+        raise ValueError("The frequency spacing (df = {}) is too low to "
+                         "generate the {} approximant from the time "
+                         "domain".format(kwargs['delta_f'], kwargs['approximant']))
+
+    hp.resize(tsamples)
+    hc.resize(tsamples)
+
+    hp = taper_timeseries(hp,'TAPER_START')
+    hc = taper_timeseries(hc,'TAPER_START')
+
+    # avoid wraparound
+    hp = hp.to_frequencyseries().cyclic_time_shift(hp.start_time)
+    hc = hc.to_frequencyseries().cyclic_time_shift(hc.start_time)
+    return hp, hc

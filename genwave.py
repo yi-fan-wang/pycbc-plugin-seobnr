@@ -53,15 +53,29 @@ def ampNRtoPhysicalTD(ampNR, M, distance):
 def genseob_td(**kwargs):
     '''PyCBC waveform generator for SEOBNRv5E
     '''
+    if kwargs['mass1'] < kwargs['mass2']:
+        #swap index 1 and 2 for mass and spinz
+        mass1 = kwargs['mass2']
+        mass2 = kwargs['mass1']
+        spin1z = kwargs['spin2z']
+        spin2z = kwargs['spin1z']
+        #no need to swap spinx and spiny cause they will be asserted to 0
+    else:
+        mass1 = kwargs['mass1']
+        mass2 = kwargs['mass2']
+        spin1z = kwargs['spin1z']
+        spin2z = kwargs['spin2z']
 
-    q = kwargs['mass1']/kwargs['mass2']
-    M_tot = kwargs['mass1'] + kwargs['mass2']
-    chi_1 = [kwargs['spin1x'], kwargs['spin1y'], kwargs['spin1z']]
-    chi_2 = [kwargs['spin2x'], kwargs['spin2y'], kwargs['spin2z']]
+    q = mass1 / mass2
+    M_tot = mass1 + mass2
+    chi_1 = [kwargs['spin1x'], kwargs['spin1y'], spin1z]
+    chi_2 = [kwargs['spin2x'], kwargs['spin2y'], spin2z]
+    
     eccentricity = kwargs['eccentricity']
-    distance = 1e6 * lal.PC_SI * kwargs['distance']
-    delta_t = kwargs['delta_t']
     rel_anomaly = kwargs['rel_anomaly']
+    
+    delta_t = kwargs['delta_t']
+    distance = 1e6 * lal.PC_SI * kwargs['distance']
     iota = kwargs['inclination']
     phi_angle = kwargs['coa_phase']
     #initial orbital angular frequency in unit of inverse M

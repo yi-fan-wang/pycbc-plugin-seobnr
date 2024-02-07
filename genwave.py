@@ -3,12 +3,12 @@ from pycbc.types import TimeSeries
 from pycbc.waveform.utils import taper_timeseries
 from pyseobnr.generate_waveform import GenerateWaveform
 
-def gen_seobnrv5ehm_td(**p):
+def gen_seobnrv5ehm_td(**par):
     '''PyCBC waveform generator for SEOBNRv5E
 
     Parameters
     ----------
-    dict: p
+    dict: par
         A dictionary of parameters used by pycbc.waveform.get_td_waveform
 
     Returns
@@ -20,17 +20,23 @@ def gen_seobnrv5ehm_td(**p):
     """
     '''
 
-    p.update({
+    # Some waveform input parameters from PyCBC have the same naming conventions
+    # as PySEOBNR, thus they can be directly used. We only update the settings 
+    # used specifically by PySEOBNR
+    par.update({
+        "approximant": "SEOBNRv5EHM", # I call it "SEOBNRv5E" in PyCBC 
+        "ModeArray": [(2,2)],      # only consider (2,2) mode
         "rel_anomaly": p["rel_anomaly"], # relativity anomaly,  needed for eccentric waveform
         "phi_ref": p["coa_phase"], # reference phase needed by SEOBNRv5
         "f22_start": p["f_lower"], # starting frequency
         "f_ref": p["f_lower"],     # reference frequency
         "deltaT": p["delta_t"],    
-        "ModeArray": [(2,2)],      # only consider (2,2) mode
         "postadiabatic": False     # turn off postadiabatic correction
+        "h_0": 1.0,                # initial time step in the integration of the ODEs.
+        "lmax_nyquist": 1          # maximum L to be checked against Nyquist frequency
         })
 
-    waveform = GenerateWaveform(p)
+    waveform = GenerateWaveform(par)
     hp, hc = waveform.generate_td_polarizations()
 
     # Build the PyCBC TimeSeries format

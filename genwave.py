@@ -3,7 +3,7 @@ from pycbc.types import TimeSeries
 from pycbc.waveform.utils import taper_timeseries
 from pyseobnr.generate_waveform import GenerateWaveform
 
-def gen_seobnrv5ehm_td(**p):
+def gen_seobnrv5e_td(**p):
     '''PyCBC waveform generator for SEOBNRv5E
 
     Parameters
@@ -45,8 +45,8 @@ def gen_seobnrv5ehm_td(**p):
 
     return hp,hc
 
-def length_in_time(**kwds):
+def seobnrv5e_length_in_time(**kwds):
     from pycbc.waveform.waveform import get_waveform_filter_length_in_time
-    if kwds['approximant'] == 'SEOBNRv5E':
-        kwds['approximant'] = "SEOBNRv5_ROM" # Approximate the length of SEOBNRv5E by SEOBNRv5_ROM
-    return get_waveform_filter_length_in_time(**kwds)
+    if "approximant" in kwds:
+        kwds.pop("approximant")
+    return get_waveform_filter_length_in_time(approximant='SEOBNRv5_ROM', **kwds)

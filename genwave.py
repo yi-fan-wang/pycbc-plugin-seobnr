@@ -20,9 +20,9 @@ def gen_seobnrv5ehm_td(**p):
     """
     '''
 
-    # Some waveform input parameters from PyCBC have the same naming conventions
-    # as PySEOBNR, thus they can be directly used. We only update the settings 
-    # used specifically by PySEOBNR
+    # Some waveform input parameters from PyCBC have the same naming 
+    # conventions as PySEOBNR, thus they can be directly inherited. 
+    # We only update the settings used uniquely by PySEOBNR
     p.update({
         "approximant": "SEOBNRv5EHM", # I call it "SEOBNRv5E" in PyCBC 
         "ModeArray": [(2,2)],      # only consider (2,2) mode
@@ -45,25 +45,8 @@ def gen_seobnrv5ehm_td(**p):
 
     return hp,hc
 
-def gen_seobnrv5ehm_fd(**kwargs):
-    kwargs['delta_t'] = 1.0 / kwargs['f_final'] / 2
-    hp, hc = genseob_td(**kwargs)
-
-    # Resize to the right duration
-    tsamples = int(1.0 / kwargs['delta_f'] / kwargs['delta_t'])
-
-    if tsamples < len(hp):
-        raise ValueError("The frequency spacing (df = {}) is too low to "
-                         "generate the {} approximant from the time "
-                         "domain".format(kwargs['delta_f'], kwargs['approximant']))
-
-    hp.resize(tsamples)
-    hc.resize(tsamples)
-
-    hp = taper_timeseries(hp,'TAPER_START')
-    hc = taper_timeseries(hc,'TAPER_START')
-
-    # avoid wraparound
-    hp = hp.to_frequencyseries().cyclic_time_shift(hp.start_time)
-    hc = hc.to_frequencyseries().cyclic_time_shift(hc.start_time)
-    return hp, hc
+def length_in_time(**kwds):
+    from pycbc.waveform.waveform import get_waveform_filter_length_in_time
+    if kwds['approximant'] == 'SEOBNRv5E':
+        kwds['approximant'] = "SEOBNRv5_ROM" # Approximate the length of SEOBNRv5E by SEOBNRv5_ROM
+    return get_waveform_filter_length_in_time(**kwds)

@@ -86,8 +86,8 @@ def gen_seobnrv5e_fd(**p):
     hp, hc = waveform.generate_fd_polarizations()
 
     # Build the PyCBC TimeSeries format
-    hp = FrequencySeries(hp.data.data[:], delta_t=hp.deltaF, epoch=hp.epoch)
-    hc = FrequencySeries(hc.data.data[:], delta_t=hc.deltaF, epoch=hp.epoch)
+    hp = FrequencySeries(hp.data.data[:], delta_f=hp.deltaF, epoch=hp.epoch)
+    hc = FrequencySeries(hc.data.data[:], delta_f=hc.deltaF, epoch=hp.epoch)
 
     return hp,hc
 

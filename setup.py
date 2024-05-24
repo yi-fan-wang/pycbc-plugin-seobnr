@@ -20,7 +20,7 @@ setup (
     #package_dir = {'':'src'},
     #package_dir={'PyTGR': 'src'},
     entry_points = {"pycbc.waveform.td":["SEOBNRv5E = genwave:gen_seobnrv5e_td"],
-                    "pycbc.waveform.length":["SEOBNRv5E = genwave:seobnrv5e_length_in_time"]
+                    "pycbc.waveform.fd":["SEOBNRv5E = genwave:gen_seobnrv5e_fd"]
                     },
     python_requires='>=3.7',
     classifiers=[

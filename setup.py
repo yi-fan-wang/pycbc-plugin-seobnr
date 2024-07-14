@@ -1,5 +1,5 @@
 """
-setup.py file for testing birefringence pycbc waveform plugin package
+setup.py file to hook up pyseobnr with pycbc waveform plugin
 """
 
 from setuptools import Extension, setup, Command, find_packages
@@ -12,15 +12,17 @@ setup (
     description = 'A waveform plugin for PyCBC for pySEOBNR',
     author = 'Yifan Wang',
     author_email = 'yifan.wang@aei.mpg.de',
-    url = 'https://github.com/yi-fan-wang/TestingGR_with_Gravwaves',
+    url = 'https://github.com/yi-fan-wang/pycbc-plugin-seobnr',
     #download_url = 'https://github.com/gwastro/revchirp/tarball/v%s' % VERSION,
     keywords = ['effective one body', 'gravitational waves', 'pycbc'],
     packages = find_packages(),
     py_modules = ['genwave'],
     #package_dir = {'':'src'},
     #package_dir={'PyTGR': 'src'},
-    entry_points = {"pycbc.waveform.td":["SEOBNRv5E = genwave:gen_seobnrv5e_td"],
-                    "pycbc.waveform.fd":["SEOBNRv5E = genwave:gen_seobnrv5e_fd"]
+    entry_points = {"pycbc.waveform.td":["SEOBNRv5E = genwave:gen_seobnrv5e_td",
+                                         "SEOBNRv5PHM = genwave:gen_seobnrv5phm_td"],
+                    "pycbc.waveform.fd":["SEOBNRv5E = genwave:gen_seobnrv5e_fd"],
+                    "pycbc.waveform.length":["SEOBNRv5PHM = genwave:seobnrv5phm_length_in_time"]
                     },
     python_requires='>=3.7',
     classifiers=[

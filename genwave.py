@@ -39,7 +39,7 @@ def gen_seobnrv5e_td(**p):
         })
 
     waveform = GenerateWaveform(p)
-    hp, hc = waveform.generate_td_polarizations()
+    hp, hc = waveform.generate_td_polarizations_conditioned_1()
 
     # Build the PyCBC TimeSeries format
     hp = TimeSeries(hp.data.data[:], delta_t=hp.deltaT, epoch=hp.epoch)
@@ -83,13 +83,16 @@ def gen_seobnrv5e_fd(**p):
         })
 
     waveform = GenerateWaveform(p)
-    hp, hc = waveform.generate_fd_polarizations()
+    hp, hc, template_duration = waveform.generate_fd_polarizations()
 
     # Build the PyCBC TimeSeries format
-    hp = FrequencySeries(hp.data.data[:], delta_f=hp.deltaF, epoch=hp.epoch)
-    hc = FrequencySeries(hc.data.data[:], delta_f=hc.deltaF, epoch=hp.epoch)
+    hp_pycbc = FrequencySeries(hp.data.data[:], delta_f=hp.deltaF, epoch=hp.epoch)
+    hc_pycbc = FrequencySeries(hc.data.data[:], delta_f=hc.deltaF, epoch=hp.epoch)
+    
+    hp_pycbc.eob_template_duration = template_duration
+    hc_pycbc.eob_template_duration = template_duration
 
-    return hp,hc
+    return hp_pycbc,hc_pycbc
 
 def gen_seobnrv5phm_td(**p):
     '''PyCBC waveform generator for SEOBNRv5HM

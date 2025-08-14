@@ -1,6 +1,7 @@
 import numpy as np
 from pycbc.types import TimeSeries, FrequencySeries
 from pyseobnr.generate_waveform import GenerateWaveform
+from pycbc.waveform import FailedWaveformError
 
 def convert_pycbc_to_seobnr(domain, p_input):
     '''
@@ -19,7 +20,7 @@ def convert_pycbc_to_seobnr(domain, p_input):
         raise ValueError("domain must be 'frequency' or 'time'")
     return p
 
-def base_seobnrv5e(highermode, domain, p_pycbc):
+def base_seobnrv5e(highermode, domain, p_pycbc, taper=True):
     '''
     Convert PyCBC waveform parameters to pyseobnr waveform parameters and 
     generate the waveform in frequency domain. Parameters are hardcoded to 
@@ -47,8 +48,11 @@ def base_seobnrv5e(highermode, domain, p_pycbc):
         hp_pycbc.eob_template_duration = template_duration
         hc_pycbc.eob_template_duration = template_duration
     elif domain == "time":
+        if taper:
         # generate the time domain waveform with the start tapered
-        hp, hc = waveform.generate_td_polarizations_conditioned_1()
+            hp, hc = waveform.generate_td_polarizations_conditioned_1()
+        else:
+            hp, hc = waveform.generate_td_polarizations()
 
         # Build the PyCBC TimeSeries format
         hp_pycbc = TimeSeries(hp.data.data[:], delta_t = hp.deltaT, epoch = hp.epoch)
@@ -56,16 +60,25 @@ def base_seobnrv5e(highermode, domain, p_pycbc):
     else:
         raise ValueError("domain must be 'frequency' or 'time'")
 
-    return hp_pycbc,hc_pycbc
+    try:
+        return hp_pycbc,hc_pycbc
+    except:
+        raise FailedWaveformError("Failed to generate SEOBNRv5EHM waveform in %s domain." % domain)
+    
+def gen_seobnrv5e_tdtaper(**p):
+    return base_seobnrv5e(False, "time", p, True)
 
 def gen_seobnrv5e_td(**p):
-    return base_seobnrv5e(False, "time", p)
+    return base_seobnrv5e(False, "time", p, False)
 
 def gen_seobnrv5e_fd(**p):
     return base_seobnrv5e(False, "frequency", p)
 
+def gen_seobnrv5ehm_tdtaper(**p):
+    return base_seobnrv5e(True, "time", p, True)
+
 def gen_seobnrv5ehm_td(**p):
-    return base_seobnrv5e(True, "time", p)
+    return base_seobnrv5e(True, "time", p, False)
 
 def gen_seobnrv5ehm_fd(**p):
     return base_seobnrv5e(True, "frequency", p)

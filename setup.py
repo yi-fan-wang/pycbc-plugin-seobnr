@@ -18,8 +18,10 @@ setup (
     py_modules = ['genwave'],
     #package_dir = {'':'src'},
     #package_dir={'PyTGR': 'src'},
-    entry_points = {"pycbc.waveform.td":["SEOBNRv5E_tdtaper = genwave:gen_seobnrv5e_td",
-                                         "SEOBNRv5EHM_tdtaper = genwave:gen_seobnrv5ehm_td"],
+    entry_points = {"pycbc.waveform.td":["SEOBNRv5E_tdtaper = genwave:gen_seobnrv5e_tdtaper",
+                                         "SEOBNRv5E_td = genwave:gen_seobnrv5e_td",
+                                         "SEOBNRv5EHM_tdtaper = genwave:gen_seobnrv5ehm_tdtaper",
+                                         "SEOBNRv5EHM_td = genwave:gen_seobnrv5ehm_td"],
                     "pycbc.waveform.fd":["SEOBNRv5E = genwave:gen_seobnrv5e_fd",
                                          "SEOBNRv5EHM = genwave:gen_seobnrv5ehm_fd"],
                     "pycbc.waveform.length":["SEOBNRv5PHM = genwave:seobnrv5phm_length_in_time"]

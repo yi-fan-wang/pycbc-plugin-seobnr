@@ -35,7 +35,7 @@ def base_seobnrv5e(highermode, domain, p_pycbc, taper=True):
 
     if domain == "frequency":
         # generate the frequency domain waveform
-        hp, hc, template_duration = waveform.generate_fd_polarizations()
+        hp, hc = waveform.generate_fd_polarizations()
 
         # Build the PyCBC TimeSeries format
         hp_pycbc = FrequencySeries(hp.data.data[:], delta_f = hp.deltaF, epoch = hp.epoch)
@@ -44,9 +44,6 @@ def base_seobnrv5e(highermode, domain, p_pycbc, taper=True):
         # Fix the pyseobnr convention to let peak time be at 0
         hp_pycbc = hp_pycbc.cyclic_time_shift(hp_pycbc.start_time + hp_pycbc.duration)
         hc_pycbc = hc_pycbc.cyclic_time_shift(hc_pycbc.start_time + hc_pycbc.duration)
-
-        hp_pycbc.eob_template_duration = template_duration
-        hc_pycbc.eob_template_duration = template_duration
     elif domain == "time":
         if taper:
         # generate the time domain waveform with the start tapered

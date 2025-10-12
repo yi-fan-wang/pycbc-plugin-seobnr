@@ -33,34 +33,35 @@ def base_seobnrv5e(highermode, domain, p_pycbc, taper=True):
     p_eob["lmax_nyquist"] = 1
     waveform = GenerateWaveform(p_eob)
 
-    if domain == "frequency":
-        # generate the frequency domain waveform
-        hp, hc = waveform.generate_fd_polarizations()
-
-        # Build the PyCBC TimeSeries format
-        hp_pycbc = FrequencySeries(hp.data.data[:], delta_f = hp.deltaF, epoch = hp.epoch)
-        hc_pycbc = FrequencySeries(hc.data.data[:], delta_f = hc.deltaF, epoch = hp.epoch)
-        
-        # Fix the pyseobnr convention to let peak time be at 0
-        hp_pycbc = hp_pycbc.cyclic_time_shift(hp_pycbc.start_time + hp_pycbc.duration)
-        hc_pycbc = hc_pycbc.cyclic_time_shift(hc_pycbc.start_time + hc_pycbc.duration)
-    elif domain == "time":
-        if taper:
-        # generate the time domain waveform with the start tapered
-            hp, hc = waveform.generate_td_polarizations_conditioned_1()
-        else:
-            hp, hc = waveform.generate_td_polarizations()
-
-        # Build the PyCBC TimeSeries format
-        hp_pycbc = TimeSeries(hp.data.data[:], delta_t = hp.deltaT, epoch = hp.epoch)
-        hc_pycbc = TimeSeries(hc.data.data[:], delta_t = hc.deltaT, epoch = hc.epoch)
-    else:
-        raise ValueError("domain must be 'frequency' or 'time'")
-
     try:
-        return hp_pycbc,hc_pycbc
-    except:
+        if domain == "frequency":
+            # generate the frequency domain waveform
+            hp, hc = waveform.generate_fd_polarizations()
+
+            # Build the PyCBC TimeSeries format
+            hp_pycbc = FrequencySeries(hp.data.data[:], delta_f = hp.deltaF, epoch = hp.epoch)
+            hc_pycbc = FrequencySeries(hc.data.data[:], delta_f = hc.deltaF, epoch = hp.epoch)
+            
+            # Fix the pyseobnr convention to let peak time be at 0
+            hp_pycbc = hp_pycbc.cyclic_time_shift(hp_pycbc.start_time + hp_pycbc.duration)
+            hc_pycbc = hc_pycbc.cyclic_time_shift(hc_pycbc.start_time + hc_pycbc.duration)
+        elif domain == "time":
+            if taper:
+            # generate the time domain waveform with the start tapered
+                hp, hc = waveform.generate_td_polarizations_conditioned_1()
+            else:
+                hp, hc = waveform.generate_td_polarizations()
+
+            # Build the PyCBC TimeSeries format
+            hp_pycbc = TimeSeries(hp.data.data[:], delta_t = hp.deltaT, epoch = hp.epoch)
+            hc_pycbc = TimeSeries(hc.data.data[:], delta_t = hc.deltaT, epoch = hc.epoch)
+        else:
+            raise FailedWaveformError("domain must be 'frequency' or 'time'")
+
+    except ValueError:
         raise FailedWaveformError("Failed to generate SEOBNRv5EHM waveform in %s domain." % domain)
+
+    return hp_pycbc,hc_pycbc
     
 def gen_seobnrv5e_tdtaper(**p):
     return base_seobnrv5e(False, "time", p, True)

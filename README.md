@@ -23,12 +23,12 @@ Frequency domain waveform:
 To call the waveform approximants in PyCBC:
 ```
 from pycbc import waveform
-hp, hc = waveform.get_fd_waveform(approximant="SEOBNRv5EHM",mass1=30,mass2=30,eccentricit=0.3,rel_anomaly=1,delta_f = 1/4,f_lower=20)
+hp, hc = waveform.get_fd_waveform(approximant="SEOBNRv5EHM",mass1=30,mass2=30,eccentricity=0.3,rel_anomaly=1,delta_f = 1/4,f_lower=20)
 ```
 
 ```
 from pycbc import waveform
-hp_td, hc_td = waveform.get_td_waveform(approximant="SEOBNRv5EHM_td",mass1=30,mass2=30,eccentricit=0.3,rel_anomaly=1,delta_t = 1/1024,f_lower=20)
+hp_td, hc_td = waveform.get_td_waveform(approximant="SEOBNRv5EHM_td",mass1=30,mass2=30,eccentricity=0.3,rel_anomaly=1,delta_t = 1/1024,f_lower=20)
 ```
 
 # Reference:

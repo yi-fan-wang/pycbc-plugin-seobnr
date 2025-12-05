@@ -23,12 +23,24 @@ Frequency domain waveform:
 To call the waveform approximants in PyCBC:
 ```
 from pycbc import waveform
-hp, hc = waveform.get_fd_waveform(approximant="SEOBNRv5EHM",mass1=30,mass2=30,eccentricity=0.3,rel_anomaly=1,delta_f = 1/4,f_lower=20)
+hp, hc = waveform.get_fd_waveform(approximant="SEOBNRv5EHM",
+                                  mass1=30,
+                                  mass2=30,
+                                  eccentricity=0.3,
+                                  rel_anomaly=1,
+                                  delta_f = 1/4,
+                                  f_lower=20)
 ```
 
 ```
 from pycbc import waveform
-hp_td, hc_td = waveform.get_td_waveform(approximant="SEOBNRv5EHM_td",mass1=30,mass2=30,eccentricity=0.3,rel_anomaly=1,delta_t = 1/1024,f_lower=20)
+hp_td, hc_td = waveform.get_td_waveform(approximant="SEOBNRv5EHM_td",
+                                        mass1=30,
+                                        mass2=30,
+                                        eccentricity=0.3,
+                                        rel_anomaly=1,
+                                        delta_t = 1/1024,
+                                        f_lower=20)
 ```
 
 # Reference:
@@ -41,12 +53,19 @@ We encourage use of these data in derivative works. If you use the material prov
 ```
 @article{Wang:2025yac,
     author = "Wang, Yi-Fan and Nitz, Alexander H.",
-    title = "{Search for gravitational waves from eccentric binary black holes with an effective-one-body template}",
+    title = "{Search for Gravitational Waves from Eccentric Binary Black Holes with an Effective-one-body Template}",
     eprint = "2508.05018",
     archivePrefix = "arXiv",
     primaryClass = "gr-qc",
     reportNumber = "LIGO-P2500464",
-    month = "8",
+    doi = "10.3847/1538-4357/ae0f1b",
+    journal = "Astrophys. J.",
+    volume = "993",
+    number = "2",
+    pages = "215",
     year = "2025"
 }
 ```
+
+# Acknowledgement:
+ - Thanks to Labani Roy for pointing out typos.

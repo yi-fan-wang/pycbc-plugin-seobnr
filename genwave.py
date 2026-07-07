@@ -20,14 +20,17 @@ def convert_pycbc_to_seobnr(domain, p_input):
         raise ValueError("domain must be 'frequency' or 'time'")
     return p
 
-def base_seobnrv5e(highermode, domain, p_pycbc, taper=True):
+def base_seobnrv5e(highermode, domain, p_pycbc, taper=True, model="SEOBNRv5EHM"):
     '''
-    Convert PyCBC waveform parameters to pyseobnr waveform parameters and 
-    generate the waveform in frequency domain. Parameters are hardcoded to 
-    only use SEOBNRv5EHM 's (2,2) mode and not check Nyquist frequency
-    '''    
+    Convert PyCBC waveform parameters to pyseobnr waveform parameters and
+    generate the waveform in frequency domain. Parameters are hardcoded to
+    only use the eccentric EHM model's (2,2) mode (unless highermode) and
+    not check the Nyquist frequency. `model` selects the pyseobnr
+    approximant, e.g. "SEOBNRv5EHM" or "SEOBNRv6EHM" (the latter requires a
+    pyseobnr build that provides the v6 model).
+    '''
     p_eob = convert_pycbc_to_seobnr(domain, p_pycbc)
-    p_eob["approximant"] = "SEOBNRv5EHM"
+    p_eob["approximant"] = model
     if not highermode:
         p_eob["ModeArray"] = [(2,2)]
     p_eob["lmax_nyquist"] = 1
@@ -59,7 +62,9 @@ def base_seobnrv5e(highermode, domain, p_pycbc, taper=True):
             raise FailedWaveformError("domain must be 'frequency' or 'time'")
 
     except ValueError:
-        raise FailedWaveformError("Failed to generate SEOBNRv5EHM waveform in %s domain." % domain)
+        name = model if highermode else model.replace("EHM", "E")
+        raise FailedWaveformError("Failed to generate %s waveform in %s domain."
+                                  % (name, domain))
 
     return hp_pycbc,hc_pycbc
     
@@ -80,6 +85,15 @@ def gen_seobnrv5ehm_td(**p):
 
 def gen_seobnrv5ehm_fd(**p):
     return base_seobnrv5e(True, "frequency", p)
+
+def gen_seobnrv6e_tdtaper(**p):
+    return base_seobnrv5e(False, "time", p, True, model="SEOBNRv6EHM")
+
+def gen_seobnrv6e_td(**p):
+    return base_seobnrv5e(False, "time", p, False, model="SEOBNRv6EHM")
+
+def gen_seobnrv6e_fd(**p):
+    return base_seobnrv5e(False, "frequency", p, model="SEOBNRv6EHM")
 
 def seobnrv5phm_length_in_time(**kwds):
     from pycbc.waveform.waveform import get_hm_length_in_time

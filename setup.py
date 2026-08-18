@@ -2,7 +2,7 @@
 setup.py file to hook up pyseobnr with pycbc waveform plugin
 """
 
-from setuptools import Extension, setup, Command, find_packages
+from setuptools import setup, find_packages
 
 VERSION = '0.1'
 
